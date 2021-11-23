@@ -1,0 +1,44 @@
+---
+# Install Maven from download
+#
+# Parameters:
+#
+# mvn_version: 3.8.4
+# mvn_download_url: https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+# mvn_download_sha512: a9b2d825eacf2e771ed5d6b0e01398589ac1bfa4171f36154d1b5787879605507802f699da6f7cfc80732a5282fd31b28e4cd6052338cbef0fa1358b48a5e3c8
+
+- name: Temp hack for download SSL error
+  ansible.builtin.command: "{{item}}"
+  with_items:
+   - yum -y install ca-certificates
+   - /bin/update-ca-trust
+
+- name: Download maven with checksum (sha512)
+  ansible.builtin.get_url:
+    url: "{{mvn_download_url}}"
+    dest: /tmp/apache-maven-{{mvn_version}}.tar.gz
+    checksum: sha512:{{mvn_download_sha512}}
+
+- name: Create directory at /usr/local/maven if missing
+  ansible.builtin.file:
+    path: /usr/local/maven
+    state: directory
+    mode: '755'
+
+- name: Unarchive maven on the remote machine at /usr/local/maven/
+  ansible.builtin.unarchive:
+    src: /tmp/apache-maven-{{mvn_version}}.tar.gz
+    dest: /usr/local/maven
+    remote_src: yes
+
+- name: Create link from the installed version ot /usr/local/maven/latest
+  ansible.builtin.file:
+    src: "/usr/local/maven/apache-maven-{{ mvn_version }}"
+    dest: /usr/local/maven/latest
+    state: link
+    force: yes
+
+- name: Setup Maven environment
+  ansible.builtin.template:
+    src: maven.sh.j2
+    dest: /etc/profile.d/maven.sh

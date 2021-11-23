@@ -1,0 +1,13 @@
+---
+
+dependencies:
+  - src: https://github.com/wahlax/ansible-jdk-role
+    version: main
+    name: wahlax.jdk
+
+galaxy_info:
+  role_name: maven
+  author: wahlax
+  description: Maven install for linux
+  company: WAHLAX LLC
+  license: MIT
