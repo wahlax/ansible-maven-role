@@ -7,12 +7,6 @@
 # mvn_download_url: https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
 # mvn_download_sha512: a9b2d825eacf2e771ed5d6b0e01398589ac1bfa4171f36154d1b5787879605507802f699da6f7cfc80732a5282fd31b28e4cd6052338cbef0fa1358b48a5e3c8
 
-- name: Temp hack for download SSL error
-  ansible.builtin.command: "{{item}}"
-  with_items:
-   - yum -y install ca-certificates
-   - /bin/update-ca-trust
-
 - name: Download maven with checksum (sha512)
   ansible.builtin.get_url:
     url: "{{mvn_download_url}}"
